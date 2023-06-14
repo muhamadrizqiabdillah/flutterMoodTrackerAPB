@@ -1,12 +1,13 @@
 import 'dart:io';
-
+import 'package:restart_app/restart_app.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tubes_clo2_kelompok4/View/Control.dart';
+import 'package:tubes_clo2_kelompok4/View/loginView.dart';
 
 import '../../Data/shared_prefs.dart';
 import '../../constants/app_const.dart';
-
 
 class SettingsPageView extends StatefulWidget {
   @override
@@ -18,7 +19,8 @@ class _SettingsPageViewState extends State<SettingsPageView> {
 
   Future<void> getImage() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? imagePicked = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? imagePicked =
+        await picker.pickImage(source: ImageSource.gallery);
     if (imagePicked != null) {
       setState(() {
         image = File(imagePicked.path);
@@ -28,7 +30,8 @@ class _SettingsPageViewState extends State<SettingsPageView> {
 
   Future<void> getCamera() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? imagePicked = await picker.pickImage(source: ImageSource.camera);
+    final XFile? imagePicked =
+        await picker.pickImage(source: ImageSource.camera);
     if (imagePicked != null) {
       setState(() {
         image = File(imagePicked.path);
@@ -37,26 +40,27 @@ class _SettingsPageViewState extends State<SettingsPageView> {
   }
 
   String? emailValue;
-  Stream<QuerySnapshot> getCollection(){
+  Stream<QuerySnapshot> getCollection() {
     FirebaseFirestore myDB = FirebaseFirestore.instance;
-    return myDB.collection("users").where("email", isEqualTo: emailValue).snapshots();
+    return myDB
+        .collection("users")
+        .where("email", isEqualTo: emailValue)
+        .snapshots();
   }
+
   @override
   void initState() {
     super.initState();
     loadValue();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Settings'),
-        backgroundColor: Color.fromRGBO(0, 197, 20, 1),
-      ),
-      body: StreamBuilder<QuerySnapshot<Object?>>(
+      body: StreamBuilder<QuerySnapshot>(
         stream: getCollection(),
-        builder: (context, snapshot){
-          if(snapshot.hasData){
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
             var index = 0;
             var dataIndex = snapshot.data!.docs[index];
             return SingleChildScrollView(
@@ -69,32 +73,37 @@ class _SettingsPageViewState extends State<SettingsPageView> {
                     },
                     child: Column(
                       children: <Widget>[
-                        Row(children: [
-                          TextButton(
-                              onPressed: ()async{
+                        Row(
+                          children: [
+                            TextButton(
+                              onPressed: () async {
                                 await getImage();
                               },
-                              child: Text('Open Image',
+                              child: Text(
+                                'Open Image',
                                 style: TextStyle(color: Colors.blue),
-                              )
-                          ),
-                          TextButton(
-                              onPressed: ()async{
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () async {
                                 await getCamera();
                               },
-                              child: Text('Open Camera',
+                              child: Text(
+                                'Open Camera',
                                 style: TextStyle(color: Colors.blue),
-                              )
-                          ),
-                        ]),
+                              ),
+                            ),
+                          ],
+                        ),
                         CircleAvatar(
-                          backgroundImage: image != null ? FileImage(image!) : AssetImage('assets/profile_picture.jpg') as ImageProvider<Object>?,
+                          backgroundImage: image != null
+                              ? FileImage(image!)
+                              : AssetImage('assets/images/profile_picture.jpg')
+                                  as ImageProvider<Object>?,
                           radius: 50.0,
                         ),
-
                         SizedBox(height: 8.0),
                         Text(
-                          // _username ?? 'Loading...',
                           '${dataIndex['username']}',
                           style: TextStyle(fontSize: 16.0),
                         ),
@@ -135,17 +144,19 @@ class _SettingsPageViewState extends State<SettingsPageView> {
                     subtitle: Text('Link to Login SignUp Page'),
                     leading: Icon(Icons.login),
                     onTap: () {
-                      // Navigator.pushNamed(context, '/loginSignUp');
                       SharedPrefs.remove(strKeyE);
                       SharedPrefs.setString(strKeyE, '');
                       loadValue();
-                      Navigator.pop(context);
+                      // Navigator.pushReplacement(context,
+                      //     MaterialPageRoute(builder: (context) => LoginView()));
+                      Restart.restartApp();
                     },
                   ),
                   Divider(),
                   ListTile(
                     title: Text('FAQ'),
-                    subtitle: Text('Frequently Asked Questions/Pertanyaan Umum'),
+                    subtitle:
+                        Text('Frequently Asked Questions/Pertanyaan Umum'),
                     leading: Icon(Icons.question_answer),
                     onTap: () {
                       Navigator.pushNamed(context, '/faq');
@@ -157,14 +168,15 @@ class _SettingsPageViewState extends State<SettingsPageView> {
               ),
             );
           } else if (snapshot.hasError) {
-              return Text('Terjadi kesalahan saat mengambil data.');
-          }else {
-               return CircularProgressIndicator();
+            return Text('Terjadi kesalahan saat mengambil data.');
+          } else {
+            return CircularProgressIndicator();
           }
-        }
-      )
+        },
+      ),
     );
   }
+
   void loadValue() async {
     emailValue = await SharedPrefs.getString(strKeyE);
     setState(() {});

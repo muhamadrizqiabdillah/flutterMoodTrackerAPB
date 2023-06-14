@@ -9,6 +9,8 @@ import 'package:tubes_clo2_kelompok4/Data/shared_prefs.dart';
 import 'package:tubes_clo2_kelompok4/constants/app_const.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SharedPrefs.getPref();
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.grey,

@@ -6,10 +6,8 @@ import 'form_datepicker/main_formdatepicker.dart';
 import 'home.dart';
 import 'list_mood/main_listmood.dart';
 
-
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
-
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -39,29 +37,38 @@ class _MainScreenState extends State<MainScreen> {
               label: 'Setting',
             ),
           ]),
-      tabBuilder: (context,index){
-        switch (index){
+      tabBuilder: (context, index) {
+        switch (index) {
           case 0:
             return CupertinoTabView(
-              builder: (context){
-                return CupertinoPageScaffold(child: MyHomePage(title: '',));
+              builder: (context) {
+                return CupertinoPageScaffold(
+                    child: MyHomePage(
+                  title: '',
+                ));
               },
             );
           case 1:
             return CupertinoTabView(
-              builder: (context){
-                return CupertinoPageScaffold(child: Myformpage(title: '',));
+              builder: (context) {
+                return CupertinoPageScaffold(
+                    child: Myformpage(
+                  title: '',
+                ));
               },
             );
-        case 2:
-          return CupertinoTabView(
-            builder: (context){
-              return CupertinoPageScaffold(child: MyListPage(title: '',));
-            },
-          );
+          case 2:
+            return CupertinoTabView(
+              builder: (context) {
+                return CupertinoPageScaffold(
+                    child: MyListPage(
+                  title: '',
+                ));
+              },
+            );
           case 3:
             return CupertinoTabView(
-              builder: (context){
+              builder: (context) {
                 return CupertinoPageScaffold(child: SettingsPageView());
               },
             );
@@ -69,6 +76,5 @@ class _MainScreenState extends State<MainScreen> {
         return Container();
       },
     );
-
   }
 }
