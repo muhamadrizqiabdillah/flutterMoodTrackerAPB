@@ -140,15 +140,13 @@ class _SettingsPageViewState extends State<SettingsPageView> {
                   ),
                   Divider(),
                   ListTile(
-                    title: Text('Login & SignUp'),
-                    subtitle: Text('Link to Login SignUp Page'),
+                    title: Text('Logout'),
+                    subtitle: Text('Link to logout your account'),
                     leading: Icon(Icons.login),
                     onTap: () {
                       SharedPrefs.remove(strKeyE);
                       SharedPrefs.setString(strKeyE, '');
                       loadValue();
-                      // Navigator.pushReplacement(context,
-                      //     MaterialPageRoute(builder: (context) => LoginView()));
                       Restart.restartApp();
                     },
                   ),

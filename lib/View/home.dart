@@ -1,11 +1,19 @@
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:tubes_clo2_kelompok4/View/zikir.dart';
 import 'inform_home.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:chewie/chewie.dart';
+import 'package:video_player/video_player.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'note.dart';
 
 import 'list_mood/main_listmood.dart';
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -14,9 +22,73 @@ class MyHomePage extends StatefulWidget {
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
+
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  late VideoPlayerController _videoPlayerController;
+  late ChewieController _chewieController;
+  late String? userEmail;
+  late String? nama;
+
+  TextEditingController judul = TextEditingController();
+  TextEditingController isi = TextEditingController();
+
+  CollectionReference moodCollection =
+  FirebaseFirestore.instance.collection('note');
+
+  CollectionReference user =
+  FirebaseFirestore.instance.collection('users');
+
+  Future<String?> getEmailFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('email');
+  }
+
+  void initState(){
+    super.initState();
+    _videoPlayerController = VideoPlayerController.asset('assets/video/happy.mp4');
+    _chewieController = ChewieController(
+      videoPlayerController: _videoPlayerController,
+      autoPlay: false,
+      looping: true,
+      autoInitialize: true
+    );
+    getEmailFromSharedPreferences().then((email) {
+      setState(() {
+        userEmail = email;
+      });
+    });
+    // FirebaseFirestore firestore = FirebaseFirestore.instance;
+    // QuerySnapshot<Map<String, dynamic>> snapshot = await firestore
+    //     .collection('users')
+    //     .where('email', isEqualTo: userEmail)
+    //     .get();
+    // // Mendapatkan data dokumen pertama
+    // Map<String, dynamic> documentSnapshot = snapshot.docs.first.data();
+    // nama = documentSnapshot["username"];
+    // String nonNullableString = nama ?? "loading...";
+
+  }
+  // Future<String> getNama()async{
+  //   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  //   QuerySnapshot<Map<String, dynamic>> snapshot = await firestore
+  //       .collection('users')
+  //       .where('email', isEqualTo: userEmail)
+  //       .get();
+  //   // Mendapatkan data dokumen pertama
+  //   Map<String, dynamic> documentSnapshot = snapshot.docs.first.data();
+  //   String savedPassword = documentSnapshot ['username'];
+  //   return savedPassword;
+  // }
+
+  @override
+  void dispose() {
+    _videoPlayerController.dispose();
+    _chewieController.dispose();
+    super.dispose();
+  }
+
   // DateTime today = DateTime.now();
   final List<ChartData> chartData = [
     ChartData('Sangat baik', 25),
@@ -30,13 +102,14 @@ class _MyHomePageState extends State<MyHomePage> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
-        body: ListView(
+        body:
+        ListView(
           children: [
             //my appbar
-            Padding(
-              padding: const EdgeInsets.only(left: 15, top: 10, right: 15),
+            const Padding(
+              padding: EdgeInsets.only(left: 15, top: 10, right: 15),
               child: Row(
-                children: const [
+                children: [
                   Text(
                     "My",
                     style: TextStyle(
@@ -102,17 +175,17 @@ class _MyHomePageState extends State<MyHomePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                              child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
-                                "Welcome,",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w700, fontSize: 28),
-                              ),
-                              Text("Nama"),
-                            ],
-                          )),
+                              child: const Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Welcome,",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w700, fontSize: 28),
+                                  ),
+                                    // Text(nonNullableString),
+                                ],
+                              )),
                           const Text("Checked your mental!"),
                         ],
                       ),
@@ -125,15 +198,15 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 10,
             ),
             const Padding(
-              padding: EdgeInsets.only(left: 15, right: 15),
+              padding: EdgeInsets.only(left: 15, right: 15,),
               child: Divider(),
             ),
             const SizedBox(
               height: 10,
             ),
             const Padding(
-              padding: EdgeInsets.only(left: 15, right: 15),
-              child: Text("summary"),
+              padding: EdgeInsets.only(left: 25, right: 15, bottom: 5),
+              child: Text("ringkasan"),
             ),
             //============================== Emoji=============================
 
@@ -141,7 +214,7 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.only(left: 15, right: 15),
               //list tile
               child: PhysicalModel(
-                color: Color.fromARGB(255, 118, 175, 255),
+                color: const Color.fromARGB(255, 118, 175, 255),
                 elevation: 10,
                 shadowColor: Colors.grey,
                 borderRadius: BorderRadius.circular(20),
@@ -149,14 +222,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => sangatbaik()),
+                      MaterialPageRoute(builder: (context) => const sangatbaik()),
                     );
                   },
                   contentPadding:
-                      EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                   //leading
                   leading: Container(
-                    padding: EdgeInsets.only(right: 12.0),
+                    padding: const EdgeInsets.only(right: 12.0),
                     decoration: const BoxDecoration(
                       border: Border(
                         right: BorderSide(width: 1.0, color: Colors.white24),
@@ -171,7 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   //title
                   title: const Text(
-                    "Introduction to Emoji",
+                    "pengenalan emosi",
                     style: TextStyle(
                       color: Color.fromARGB(255, 35, 37, 93),
                       fontWeight: FontWeight.bold,
@@ -186,6 +259,273 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
+            //=======================================to note===============================================
+
+            const SizedBox(
+              height: 10,
+            ),
+
+            const Padding(
+              padding: EdgeInsets.only(left: 25, right: 15, bottom: 5),
+              child: Text("catatan"),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.only(left: 15, right: 15),
+              //list tile
+              child: PhysicalModel(
+                color: const Color.fromARGB(255, 118, 175, 255),
+                elevation: 10,
+                shadowColor: Colors.grey,
+                borderRadius: BorderRadius.circular(20),
+                child: ListTile(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Note()),
+                    );
+                  },
+                  contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                  //leading
+                  leading: Container(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        right: BorderSide(width: 1.0, color: Colors.white24),
+                      ),
+                    ),
+                    child: const Icon(
+                        Icons.note,
+                      size: 35,
+                    )
+                  ),
+                  //title
+                  title: const Text(
+                    "catatan harian",
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 35, 37, 93),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  //trailing
+                  trailing: const Icon(
+                    Icons.keyboard_arrow_right,
+                    color: Color.fromARGB(255, 35, 37, 93),
+                    size: 30.0,
+                  ),
+                ),
+              ),
+            ),
+
+            //=========================================zikir==============================================
+            const SizedBox(
+              height: 10,
+            ),
+
+            const Padding(
+              padding: EdgeInsets.only(left: 25, right: 15, bottom: 5),
+              child: Text("zikir"),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.only(left: 15, right: 15),
+              //list tile
+              child: PhysicalModel(
+                color: const Color.fromARGB(255, 118, 175, 255),
+                elevation: 10,
+                shadowColor: Colors.grey,
+                borderRadius: BorderRadius.circular(20),
+                child: ListTile(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Zikir()),
+                    );
+                  },
+                  contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                  //leading
+                  leading: Container(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      decoration: const BoxDecoration(
+                        border: Border(
+                          right: BorderSide(width: 1.0, color: Colors.white24),
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.note,
+                        size: 35,
+                      )
+                  ),
+                  //title
+                  title: const Text(
+                    "yuk berzikir agar tentram",
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 35, 37, 93),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  //trailing
+                  trailing: const Icon(
+                    Icons.keyboard_arrow_right,
+                    color: Color.fromARGB(255, 35, 37, 93),
+                    size: 30.0,
+                  ),
+                ),
+              ),
+            ),
+            //=======================================TextField=============================================
+            const SizedBox(
+              height: 10,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 25, right: 15, bottom: 5),
+              child: Text("note"),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 15, right: 15),
+              //list tile
+              child: PhysicalModel(
+                color: const Color.fromARGB(255, 118, 175, 255),
+
+                elevation: 10,
+                shadowColor: Colors.grey,
+                borderRadius: BorderRadius.circular(20),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+
+                    children: [
+                      //judul
+                      TextField(
+                        // maxLines: 10,
+                        controller: judul,
+                        decoration: const InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                          // labelText: 'Catatan',
+                          hintText: 'Masukkan judul catatan',
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(20),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(
+                        height: 20,
+                      ),
+
+                      //isi
+                      TextField(
+                        maxLines: 10,
+                        controller: isi,
+                        decoration: const InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          // labelText: 'Catatan',
+                          hintText: 'Masukkan isi catatan',
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(20),
+                              // Color(0xFFe0e0e0),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Container(
+                        width: 200,
+                        height: 45,
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor: const Color(0xFF66BB6A),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          onPressed: () async{
+                            String? email = await getEmailFromSharedPreferences();
+                            String FieldJudul = judul.text;
+                            String FieldIsi = isi.text;
+
+                            if (FieldJudul.isEmpty || FieldIsi.isEmpty){
+                              // ignore: use_build_context_synchronously
+                              showDialog<String>(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                  title: const Text("AlertDialog Title"),
+                                  content: const Text('AlertDialog description'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context, 'Cancel'),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context, 'OK'),
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }else{
+                              await moodCollection.add({
+                                'email': email,
+                                'isi': FieldIsi,
+                                'judul': FieldJudul,
+                              });
+                            }
+
+                          },
+                          child: const Text(
+                            "simpan",
+                            style: TextStyle(
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+
+
+
+
+            //=======================================video=================================================
+            const SizedBox(
+              height: 10,
+            ),
+
+            const Padding(
+              padding: EdgeInsets.only(left: 25, right: 15, bottom: 5),
+              child: Text("video untukmu"),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 15, right: 15),
+              child: Container(
+                height: 150,
+                width: 150,
+                decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 118, 175, 255),
+                    borderRadius: BorderRadius.circular(25)
+                ),
+                child: Chewie(
+                  controller: _chewieController,
+                ),
+              ),
+            ),
+
             //========================================chart year ===========================================================
             const SizedBox(
               height: 10,
@@ -195,7 +535,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(25),
-                  color: Color.fromARGB(255, 118, 175, 255),
+                  color: const Color.fromARGB(255, 118, 175, 255),
                 ),
                 child: SfCircularChart(
                   title: ChartTitle(
@@ -228,7 +568,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             //  =============================================== Today ====================================================
-            SizedBox(
+            const SizedBox(
               height: 15,
             ),
 
@@ -238,16 +578,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: const EdgeInsets.only(top: 5),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(25),
-                  color: Color.fromARGB(255, 118, 175, 255),
+                  color: const Color.fromARGB(255, 118, 175, 255),
                 ),
-                child: Column(
-                  children: const [
+                child: const Column(
+                  children: [
                     Text("today's total mood",
                         style: TextStyle(
                             fontWeight: FontWeight.w700, fontSize: 19)),
                     Divider(),
                     ListTile(
-                      leading: const Text(
+                      leading: Text(
                         '🤩',
                         style: TextStyle(
                           fontSize: 30,
@@ -262,7 +602,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     Divider(),
                     ListTile(
-                      leading: const Text(
+                      leading: Text(
                         '🙂',
                         style: TextStyle(
                           fontSize: 30,
@@ -275,7 +615,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     Divider(),
                     ListTile(
-                      leading: const Text(
+                      leading: Text(
                         '😐',
                         style: TextStyle(
                           fontSize: 30,
@@ -288,7 +628,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     Divider(),
                     ListTile(
-                      leading: const Text(
+                      leading: Text(
                         '😑',
                         style: TextStyle(
                           fontSize: 30,
@@ -301,7 +641,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     Divider(),
                     ListTile(
-                      leading: const Text(
+                      leading: Text(
                         '😡',
                         style: TextStyle(
                           fontSize: 30,
@@ -318,67 +658,52 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             //  ============================== selesai ==================================
-            SizedBox(
-              height: 15,
-            )
+            const SizedBox(height: 15,)
           ],
-        ),
-        // bottomNavigationBar: ConvexAppBar(
-        //     items: [
-        //       TabItem(icon: Icons.home, title: 'Home'),
-        //       TabItem(icon: Icons.map, title: 'Discovery'),
-        //       TabItem(icon: Icons.add, title: 'Add'),
-        //       TabItem(icon: Icons.message, title: 'Message'),
-        //       TabItem(icon: Icons.people, title: 'Profile'),
-        //     ],
-        //   initialActiveIndex: 2,
-        // ),
+        )
       ),
     );
   }
 }
-
 @override
 Widget build(BuildContext context) {
   return CupertinoTabScaffold(
-    tabBar: CupertinoTabBar(
+      tabBar: CupertinoTabBar(
         activeColor: Colors.black,
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.info),
-            label: 'List Mood',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Setting',
-          ),
-        ]),
-    tabBuilder: (context, index) {
-      switch (index) {
-        case 0:
-          return CupertinoTabView(
-            builder: (context) {
-              return CupertinoPageScaffold(
-                  child: MyHomePage(
-                title: '',
-              ));
-            },
-          );
-        // case 1:
-        //   return CupertinoTabView(
-        //     builder: (context){
-        //       return CupertinoPageScaffold(child: child);
-        //     },
-        //   );
-      }
-      return Container();
-    },
+          items: <BottomNavigationBarItem>[
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Home',
+        ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.info),
+              label: 'List Mood',
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: 'Setting',
+            ),
+      ]),
+      tabBuilder: (context,index){
+        switch (index){
+          case 0:
+            return CupertinoTabView(
+              builder: (context){
+                return const CupertinoPageScaffold(child: MyHomePage(title: '',));
+              },
+            );
+          // case 1:
+          //   return CupertinoTabView(
+          //     builder: (context){
+          //       return CupertinoPageScaffold(child: child);
+          //     },
+          //   );
+        }
+        return Container();
+      },
   );
 }
+
 
 class ChartData {
   ChartData(this.x, this.y);
