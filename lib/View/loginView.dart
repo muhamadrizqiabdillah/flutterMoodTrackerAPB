@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tubes_clo2_kelompok4/View/registerView.dart';
 import 'package:tubes_clo2_kelompok4/View/widgets/btnFormGlobal.dart';
 import 'package:tubes_clo2_kelompok4/View/widgets/txtFormGlobal.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tubes_clo2_kelompok4/constants/app_const.dart';
+import 'package:tubes_clo2_kelompok4/Data/shared_prefs.dart';
 
 import '../utils/globalColors.dart';
 import 'Control.dart';
@@ -91,9 +92,11 @@ class LoginView extends StatelessWidget {
     }
 
     // Login berhasil
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(
-        'email', email); // Menyimpan email ke SharedPreferences
+    SharedPrefs.setString(
+        strKeyE, email); // Menyimpan email ke SharedPreferences
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // await prefs.setString(
+    //     'strKeyE', email); // Menyimpan email ke SharedPreferences
 
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) {
